@@ -22,7 +22,7 @@ class SimpleMonitor13(switch.SimpleSwitch13):
         self.datapaths = {}
         self.monitor_thread = hub.spawn(self._monitor)
         self.flow_model = self.load_model()
-         
+        self.reply_recvd = True
 
         # self.flow_training()
 
@@ -49,16 +49,20 @@ class SimpleMonitor13(switch.SimpleSwitch13):
 
     def _monitor(self):
         while True:
-            self.req_send_time = time.time()
-            for dp in self.datapaths.values():
-                print(f"REQUESTING DP {dp} ---------")
-                self._request_stats(dp)
-            
-            print("OUT OF LOOP ------")
-            hub.sleep(5)
-            print("CALLING PREDICT ------")
+            if self.reply_recvd:
+                self.reply_recvd = False
+                self.req_send_time = time.time()
+                for dp in self.datapaths.values():
+                    print(f"REQUESTING DP {dp} ---------")
+                    self._request_stats(dp)
+                
+                print("OUT OF LOOP ------")
+                # hub.sleep(5)
+                # print("CALLING PREDICT ------")
 
-            self.flow_predict()
+                # self.flow_predict()
+            else:
+                print("NR -----")
 
     def _request_stats(self, datapath):
         self.logger.debug('send stats request: %016x', datapath.id)
@@ -71,6 +75,7 @@ class SimpleMonitor13(switch.SimpleSwitch13):
     def _flow_stats_reply_handler(self, ev):
 
         print(f"RECVD FLOW STATS REPLY------------------ in {time.time() - self.req_send_time} s from dp {ev.msg.datapath.id}")
+        
 
         timestamp = datetime.now()
         timestamp = timestamp.timestamp()
@@ -78,10 +83,10 @@ class SimpleMonitor13(switch.SimpleSwitch13):
         file0 = open("PredictFlowStatsfile.csv","w")
         file0.write('timestamp,datapath_id,flow_id,ip_src,tp_src,ip_dst,tp_dst,ip_proto,icmp_code,icmp_type,flow_duration_sec,flow_duration_nsec,idle_timeout,hard_timeout,flags,packet_count,byte_count,packet_count_per_second,packet_count_per_nsecond,byte_count_per_second,byte_count_per_nsecond\n')
         body = ev.msg.body
-        print("----------------------------------------------")
-        for stat in body:
-            print(stat)
-        print("----------------------------------------------")
+        # print("----------------------------------------------")
+        # for stat in body:
+        #     print(stat)
+        # print("----------------------------------------------")
         icmp_code = -1
         icmp_type = -1
         tp_src = 0
@@ -132,6 +137,8 @@ class SimpleMonitor13(switch.SimpleSwitch13):
                         byte_count_per_second,byte_count_per_nsecond))
             
         file0.close()
+        print("CALLING PREDICT ------")
+        self.flow_predict()
 
     # def flow_training(self):
 
@@ -210,8 +217,9 @@ class SimpleMonitor13(switch.SimpleSwitch13):
             
             file0.write('timestamp,datapath_id,flow_id,ip_src,tp_src,ip_dst,tp_dst,ip_proto,icmp_code,icmp_type,flow_duration_sec,flow_duration_nsec,idle_timeout,hard_timeout,flags,packet_count,byte_count,packet_count_per_second,packet_count_per_nsecond,byte_count_per_second,byte_count_per_nsecond\n')
             file0.close()
+            self.reply_recvd = True
 
         except Exception as e:
             print(f"EXC")
-
+            self.reply_recvd = True
             pass
