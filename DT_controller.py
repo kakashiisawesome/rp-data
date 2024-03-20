@@ -53,7 +53,10 @@ class SimpleMonitor13(switch.SimpleSwitch13):
             for dp in self.datapaths.values():
                 print(f"REQUESTING DP {dp} ---------")
                 self._request_stats(dp)
+            
+            print("OUT OF LOOP ------")
             hub.sleep(5)
+            print("CALLING PREDICT ------")
 
             self.flow_predict()
 
