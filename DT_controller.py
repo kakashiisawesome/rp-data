@@ -66,7 +66,7 @@ class SimpleMonitor13(switch.SimpleSwitch13):
     @set_ev_cls(ofp_event.EventOFPFlowStatsReply, MAIN_DISPATCHER)
     def _flow_stats_reply_handler(self, ev):
 
-        print("RECVD FLOW STATS REPLY------------------")
+        print(f"RECVD FLOW STATS REPLY------------------ in {time.time() - self.req_send_time} s")
 
         timestamp = datetime.now()
         timestamp = timestamp.timestamp()
@@ -190,11 +190,11 @@ class SimpleMonitor13(switch.SimpleSwitch13):
             self.logger.info("------------------------------------------------------------------------------")
             if (legitimate_trafic/len(y_flow_pred)*100) > 80:
                 self.logger.info("legitimate trafic ...")
-                print(f"PREDICT AT TIME {time.time() - self.req_send_time}")
+                print(f"PREDICT IN TIME {time.time() - self.req_send_time} s")
             else:
                 self.logger.info("ddos trafic ...")
                 self.logger.info("victim is host: h{}".format(victim))
-                print(f"PREDICT AT TIME {time.time() - self.req_send_time}")
+                print(f"PREDICT IN TIME {time.time() - self.req_send_time} s")
 
             self.logger.info("------------------------------------------------------------------------------")
             
