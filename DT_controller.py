@@ -61,8 +61,6 @@ class SimpleMonitor13(switch.SimpleSwitch13):
                 # print("CALLING PREDICT ------")
 
                 # self.flow_predict()
-            else:
-                print("NR -----")
 
     def _request_stats(self, datapath):
         self.logger.debug('send stats request: %016x', datapath.id)
