@@ -51,8 +51,8 @@ class SimpleMonitor13(switch.SimpleSwitch13):
             
             print("OUT OF LOOP ------")
             hub.sleep(5)
-            print("CALLING PREDICT ------")
-            self.flow_predict()
+            # print("CALLING PREDICT ------")
+            # self.flow_predict()
 
     def _request_stats(self, datapath):
         self.logger.debug('send stats request: %016x', datapath.id)
@@ -76,7 +76,7 @@ class SimpleMonitor13(switch.SimpleSwitch13):
         # print("----------------------------------------------")
         # for stat in body:
         #     print(stat)
-        # print("----------------------------------------------")
+        # print("--
         icmp_code = -1
         icmp_type = -1
         tp_src = 0
@@ -127,7 +127,7 @@ class SimpleMonitor13(switch.SimpleSwitch13):
                         byte_count_per_second,byte_count_per_nsecond))
             
         file0.close()
-        print("CALLING PREDICT ------")
+        print("CALLING PREDICT FROM FLOW------")
         self.flow_predict()
 
     # def flow_training(self):
