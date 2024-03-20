@@ -30,6 +30,7 @@ class SimpleMonitor13(switch.SimpleSwitch13):
         print("Training time: ", (end-start))
 
     def load_model(self):
+        print("MODEL LOADED -----------")
         model = pickle.load(open("trained_model.pkl", 'rb'))
         return model
 
