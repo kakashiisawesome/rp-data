@@ -52,7 +52,7 @@ class SimpleMonitor13(switch.SimpleSwitch13):
             self.req_send_time = time.time()
             for dp in self.datapaths.values():
                 self._request_stats(dp)
-            hub.sleep(10)
+            hub.sleep(5)
 
             self.flow_predict()
 
