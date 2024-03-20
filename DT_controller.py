@@ -12,6 +12,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import accuracy_score
 import pickle
+import time
 
 class SimpleMonitor13(switch.SimpleSwitch13):
 
@@ -22,12 +23,10 @@ class SimpleMonitor13(switch.SimpleSwitch13):
         self.monitor_thread = hub.spawn(self._monitor)
         self.flow_model = self.load_model()
 
-        start = datetime.now()
-
         # self.flow_training()
 
-        end = datetime.now()
-        print("Training time: ", (end-start))
+
+
 
     def load_model(self):
         print("MODEL LOADED -----------")
@@ -61,6 +60,7 @@ class SimpleMonitor13(switch.SimpleSwitch13):
 
         req = parser.OFPFlowStatsRequest(datapath)
         datapath.send_msg(req)
+        print(f"REQ SENT AT {time.time()}")
 
     @set_ev_cls(ofp_event.EventOFPFlowStatsReply, MAIN_DISPATCHER)
     def _flow_stats_reply_handler(self, ev):
@@ -73,15 +73,14 @@ class SimpleMonitor13(switch.SimpleSwitch13):
         file0 = open("PredictFlowStatsfile.csv","w")
         file0.write('timestamp,datapath_id,flow_id,ip_src,tp_src,ip_dst,tp_dst,ip_proto,icmp_code,icmp_type,flow_duration_sec,flow_duration_nsec,idle_timeout,hard_timeout,flags,packet_count,byte_count,packet_count_per_second,packet_count_per_nsecond,byte_count_per_second,byte_count_per_nsecond\n')
         body = ev.msg.body
-        print(f"BODY: \n {body}")
         icmp_code = -1
         icmp_type = -1
         tp_src = 0
         tp_dst = 0
 
+        print(f"RECVD REPLY AT {time.time()}")
         for stat in sorted([flow for flow in body if (flow.priority == 1) ], key=lambda flow:
             (flow.match['eth_type'],flow.match['ipv4_src'],flow.match['ipv4_dst'],flow.match['ip_proto'])):
-            print(f"INSIDE LOOP FLOW STAT ------------")
         
             ip_src = stat.match['ipv4_src']
             ip_dst = stat.match['ipv4_dst']
@@ -191,9 +190,11 @@ class SimpleMonitor13(switch.SimpleSwitch13):
             self.logger.info("------------------------------------------------------------------------------")
             if (legitimate_trafic/len(y_flow_pred)*100) > 80:
                 self.logger.info("legitimate trafic ...")
+                print(f"PREDICT AT TIME {time.time()}")
             else:
                 self.logger.info("ddos trafic ...")
                 self.logger.info("victim is host: h{}".format(victim))
+                print(f"PREDICT AT TIME {time.time()}")
 
             self.logger.info("------------------------------------------------------------------------------")
             
@@ -203,6 +204,6 @@ class SimpleMonitor13(switch.SimpleSwitch13):
             file0.close()
 
         except Exception as e:
-            print(f"EXC {e}")
+            print(f"EXC")
 
             pass
