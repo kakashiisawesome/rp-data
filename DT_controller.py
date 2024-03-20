@@ -200,5 +200,7 @@ class SimpleMonitor13(switch.SimpleSwitch13):
             file0.write('timestamp,datapath_id,flow_id,ip_src,tp_src,ip_dst,tp_dst,ip_proto,icmp_code,icmp_type,flow_duration_sec,flow_duration_nsec,idle_timeout,hard_timeout,flags,packet_count,byte_count,packet_count_per_second,packet_count_per_nsecond,byte_count_per_second,byte_count_per_nsecond\n')
             file0.close()
 
-        except:
+        except Exception as e:
+            print(f"EXC {e}")
+
             pass
