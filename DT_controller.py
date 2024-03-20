@@ -22,6 +22,7 @@ class SimpleMonitor13(switch.SimpleSwitch13):
         self.datapaths = {}
         self.monitor_thread = hub.spawn(self._monitor)
         self.flow_model = self.load_model()
+         
 
         # self.flow_training()
 
@@ -48,6 +49,7 @@ class SimpleMonitor13(switch.SimpleSwitch13):
 
     def _monitor(self):
         while True:
+            self.req_send_time = time.time()
             for dp in self.datapaths.values():
                 self._request_stats(dp)
             hub.sleep(10)
@@ -60,7 +62,6 @@ class SimpleMonitor13(switch.SimpleSwitch13):
 
         req = parser.OFPFlowStatsRequest(datapath)
         datapath.send_msg(req)
-        print(f"REQ SENT AT {time.time()}")
 
     @set_ev_cls(ofp_event.EventOFPFlowStatsReply, MAIN_DISPATCHER)
     def _flow_stats_reply_handler(self, ev):
@@ -78,7 +79,6 @@ class SimpleMonitor13(switch.SimpleSwitch13):
         tp_src = 0
         tp_dst = 0
 
-        print(f"RECVD REPLY AT {time.time()}")
         for stat in sorted([flow for flow in body if (flow.priority == 1) ], key=lambda flow:
             (flow.match['eth_type'],flow.match['ipv4_src'],flow.match['ipv4_dst'],flow.match['ip_proto'])):
         
@@ -190,11 +190,11 @@ class SimpleMonitor13(switch.SimpleSwitch13):
             self.logger.info("------------------------------------------------------------------------------")
             if (legitimate_trafic/len(y_flow_pred)*100) > 80:
                 self.logger.info("legitimate trafic ...")
-                print(f"PREDICT AT TIME {time.time()}")
+                print(f"PREDICT AT TIME {time.time() - self.req_send_time}")
             else:
                 self.logger.info("ddos trafic ...")
                 self.logger.info("victim is host: h{}".format(victim))
-                print(f"PREDICT AT TIME {time.time()}")
+                print(f"PREDICT AT TIME {time.time() - self.req_send_time}")
 
             self.logger.info("------------------------------------------------------------------------------")
             
