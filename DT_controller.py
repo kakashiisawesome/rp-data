@@ -48,6 +48,7 @@ class SimpleMonitor13(switch.SimpleSwitch13):
                 del self.datapaths[datapath.id]
 
     def _monitor(self):
+        hub.sleep(10)
         while True:
             if self.reply_recvd:
                 self.reply_recvd = False
