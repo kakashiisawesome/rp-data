@@ -22,11 +22,6 @@ class SimpleMonitor13(switch.SimpleSwitch13):
         self.datapaths = {}
         self.monitor_thread = hub.spawn(self._monitor)
         self.flow_model = self.load_model()
-        self.reply_recvd = True
-
-        # self.flow_training()
-
-
 
 
     def load_model(self):
@@ -48,20 +43,16 @@ class SimpleMonitor13(switch.SimpleSwitch13):
                 del self.datapaths[datapath.id]
 
     def _monitor(self):
-        hub.sleep(10)
         while True:
-            if self.reply_recvd:
-                self.reply_recvd = False
-                self.req_send_time = time.time()
-                for dp in self.datapaths.values():
-                    print(f"REQUESTING DP {dp} ---------")
-                    self._request_stats(dp)
-                
-                print("OUT OF LOOP ------")
-                # hub.sleep(5)
-                # print("CALLING PREDICT ------")
-
-                # self.flow_predict()
+            self.req_send_time = time.time()
+            for dp in self.datapaths.values():
+                print(f"REQUESTING DP {dp} ---------")
+                self._request_stats(dp)
+            
+            print("OUT OF LOOP ------")
+            hub.sleep(5)
+            print("CALLING PREDICT ------")
+            self.flow_predict()
 
     def _request_stats(self, datapath):
         self.logger.debug('send stats request: %016x', datapath.id)
@@ -216,9 +207,7 @@ class SimpleMonitor13(switch.SimpleSwitch13):
             
             file0.write('timestamp,datapath_id,flow_id,ip_src,tp_src,ip_dst,tp_dst,ip_proto,icmp_code,icmp_type,flow_duration_sec,flow_duration_nsec,idle_timeout,hard_timeout,flags,packet_count,byte_count,packet_count_per_second,packet_count_per_nsecond,byte_count_per_second,byte_count_per_nsecond\n')
             file0.close()
-            self.reply_recvd = True
 
         except Exception as e:
             print(f"EXC")
-            self.reply_recvd = True
             pass
