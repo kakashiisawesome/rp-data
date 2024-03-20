@@ -161,7 +161,7 @@ class SimpleMonitor13(switch.SimpleSwitch13):
 
     def flow_predict(self):
         try:
-            print("PREDICTING ----------------")
+            print(f"PREDICTING ---------------- {self.flow_model}")
             predict_flow_dataset = pd.read_csv('PredictFlowStatsfile.csv')
 
             predict_flow_dataset.iloc[:, 2] = predict_flow_dataset.iloc[:, 2].str.replace('.', '')
