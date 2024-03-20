@@ -80,8 +80,8 @@ class SimpleMonitor13(switch.SimpleSwitch13):
         tp_dst = 0
 
         for stat in sorted([flow for flow in body if (flow.priority == 1) ], key=lambda flow:
-            print(f"INSIDE LOOP FLOW STAT ------------")
             (flow.match['eth_type'],flow.match['ipv4_src'],flow.match['ipv4_dst'],flow.match['ip_proto'])):
+            print(f"INSIDE LOOP FLOW STAT ------------")
         
             ip_src = stat.match['ipv4_src']
             ip_dst = stat.match['ipv4_dst']
