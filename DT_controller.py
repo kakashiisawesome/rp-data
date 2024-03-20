@@ -51,6 +51,7 @@ class SimpleMonitor13(switch.SimpleSwitch13):
         while True:
             self.req_send_time = time.time()
             for dp in self.datapaths.values():
+                print(f"REQUESTING DP {dp} ---------")
                 self._request_stats(dp)
             hub.sleep(5)
 
@@ -66,7 +67,7 @@ class SimpleMonitor13(switch.SimpleSwitch13):
     @set_ev_cls(ofp_event.EventOFPFlowStatsReply, MAIN_DISPATCHER)
     def _flow_stats_reply_handler(self, ev):
 
-        print(f"RECVD FLOW STATS REPLY------------------ in {time.time() - self.req_send_time} s")
+        print(f"RECVD FLOW STATS REPLY------------------ in {time.time() - self.req_send_time} s from dp {ev.msg.datapath.id}")
 
         timestamp = datetime.now()
         timestamp = timestamp.timestamp()
