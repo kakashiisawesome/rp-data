@@ -49,7 +49,6 @@ class SimpleMonitor13(switch.SimpleSwitch13):
                 print(f"REQUESTING DP {dp} ---------")
                 self._request_stats(dp)
             
-            print("OUT OF LOOP ------")
             hub.sleep(5)
             # print("CALLING PREDICT ------")
             # self.flow_predict()
@@ -127,7 +126,6 @@ class SimpleMonitor13(switch.SimpleSwitch13):
                         byte_count_per_second,byte_count_per_nsecond))
             
         file0.close()
-        print("CALLING PREDICT FROM FLOW------")
         self.flow_predict()
 
     # def flow_training(self):
@@ -167,7 +165,7 @@ class SimpleMonitor13(switch.SimpleSwitch13):
 
     def flow_predict(self):
         try:
-            print(f"PREDICTING ---------------- {self.flow_model}")
+            print(f"PREDICTING ---------------")
             predict_flow_dataset = pd.read_csv('PredictFlowStatsfile.csv')
 
             predict_flow_dataset.iloc[:, 2] = predict_flow_dataset.iloc[:, 2].str.replace('.', '')
