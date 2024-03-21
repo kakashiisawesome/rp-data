@@ -49,7 +49,7 @@ class SimpleMonitor13(switch.SimpleSwitch13):
                 print(f"REQUESTING DP {dp} ---------")
                 self._request_stats(dp)
             
-            hub.sleep(5)
+            hub.sleep(10)
             # print("CALLING PREDICT ------")
             # self.flow_predict()
 
