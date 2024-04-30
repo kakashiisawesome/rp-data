@@ -29,6 +29,7 @@ class SimpleMonitor13(switch.SimpleSwitch13):
                 [MAIN_DISPATCHER, DEAD_DISPATCHER])
     def _state_change_handler(self, ev):
         datapath = ev.datapath
+        print(f"STATE CHABGE dp = {datapath}")
         if ev.state == MAIN_DISPATCHER:
             if datapath.id not in self.datapaths:
                 self.logger.debug('register datapath: %016x', datapath.id)
@@ -40,6 +41,7 @@ class SimpleMonitor13(switch.SimpleSwitch13):
 
     def _monitor(self):
         while True:
+            print("...")
             self.req_send_time = time.time()
             for dp in self.datapaths.values():
                 print(f"REQUESTING DP {dp} ---------")
