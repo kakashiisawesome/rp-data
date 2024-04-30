@@ -106,7 +106,7 @@ class SimpleMonitor13(switch.SimpleSwitch13):
                 byte_count_per_second = 0
             
             flow_duration = int(stat.duration_sec) * 1000
-            file0.write(f"{flow_id},{ip_src},{tp_src},{ip_dst},{tp_dst},{ip_proto},{flow_duration},{byte_count_per_second},{packet_count_per_second},{stat.packet_count},{stat.byte_count}")
+            file0.write(f"{flow_id},{ip_src},{tp_src},{ip_dst},{tp_dst},{ip_proto},{flow_duration},{byte_count_per_second},{packet_count_per_second},{stat.packet_count},{stat.byte_count}\n")
             # print("STATS__________________________________________________________________________________________________________________________")
             # print(f"{flow_id},{ip_src},{tp_src},{ip_dst},{tp_dst},{ip_proto},{flow_duration},{byte_count_per_second},{packet_count_per_second},{stat.packet_count},{stat.byte_count}")
             # print("__________________________________________________________________________________________________________________________")
