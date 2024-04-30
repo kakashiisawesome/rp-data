@@ -107,9 +107,9 @@ class SimpleMonitor13(switch.SimpleSwitch13):
             
             flow_duration = int(stat.duration_sec) * 1000
             file0.write(f"{flow_id},{ip_src},{tp_src},{ip_dst},{tp_dst},{ip_proto},{flow_duration},{byte_count_per_second},{packet_count_per_second},{stat.packet_count},{stat.byte_count}")
-            print("STATS__________________________________________________________________________________________________________________________")
-            print(f"{flow_id},{ip_src},{tp_src},{ip_dst},{tp_dst},{ip_proto},{flow_duration},{byte_count_per_second},{packet_count_per_second},{stat.packet_count},{stat.byte_count}")
-            print("__________________________________________________________________________________________________________________________")
+            # print("STATS__________________________________________________________________________________________________________________________")
+            # print(f"{flow_id},{ip_src},{tp_src},{ip_dst},{tp_dst},{ip_proto},{flow_duration},{byte_count_per_second},{packet_count_per_second},{stat.packet_count},{stat.byte_count}")
+            # print("__________________________________________________________________________________________________________________________")
             # file0.write("{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}\n"
             #     .format(timestamp, ev.msg.datapath.id, flow_id, ip_src, tp_src,ip_dst, tp_dst,
             #             ip_proto,
@@ -172,6 +172,8 @@ class SimpleMonitor13(switch.SimpleSwitch13):
 
             legitimate_trafic = 0
             ddos_trafic = 0
+            
+            print(f"PRED = {y_flow_pred}")
 
             for i in y_flow_pred:
                 if i == 0:
