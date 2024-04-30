@@ -7,10 +7,6 @@ import switch
 from datetime import datetime
 
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import accuracy_score
 import pickle
 import time
 
@@ -26,7 +22,7 @@ class SimpleMonitor13(switch.SimpleSwitch13):
 
     def load_model(self):
         print("MODEL LOADED -----------")
-        model = pickle.load(open("trained_model.pkl", 'rb'))
+        model = pickle.load(open("trained_model_new.pkl", 'rb'))
         return model
 
     @set_ev_cls(ofp_event.EventOFPStateChange,
@@ -70,14 +66,13 @@ class SimpleMonitor13(switch.SimpleSwitch13):
         timestamp = timestamp.timestamp()
 
         file0 = open("PredictFlowStatsfile.csv","w")
-        file0.write('timestamp,datapath_id,flow_id,ip_src,tp_src,ip_dst,tp_dst,ip_proto,icmp_code,icmp_type,flow_duration_sec,flow_duration_nsec,idle_timeout,hard_timeout,flags,packet_count,byte_count,packet_count_per_second,packet_count_per_nsecond,byte_count_per_second,byte_count_per_nsecond\n')
+        file0.write('flow_id,ip_src,tp_src,ip_dst,tp_dst,ip_proto,flow_duration,byte_count_per_second,packet_count_per_second,packet_count,byte_count\n')
         body = ev.msg.body
         # print("----------------------------------------------")
         # for stat in body:
         #     print(stat)
         # print("--
-        icmp_code = -1
-        icmp_type = -1
+    
         tp_src = 0
         tp_dst = 0
 
@@ -88,11 +83,8 @@ class SimpleMonitor13(switch.SimpleSwitch13):
             ip_dst = stat.match['ipv4_dst']
             ip_proto = stat.match['ip_proto']
             
-            if stat.match['ip_proto'] == 1:
-                icmp_code = stat.match['icmpv4_code']
-                icmp_type = stat.match['icmpv4_type']
                 
-            elif stat.match['ip_proto'] == 6:
+            if stat.match['ip_proto'] == 6:
                 tp_src = stat.match['tcp_src']
                 tp_dst = stat.match['tcp_dst']
 
@@ -100,30 +92,32 @@ class SimpleMonitor13(switch.SimpleSwitch13):
                 tp_src = stat.match['udp_src']
                 tp_dst = stat.match['udp_dst']
 
-            flow_id = str(ip_src) + str(tp_src) + str(ip_dst) + str(tp_dst) + str(ip_proto)
+            flow_id = str(ip_src) + str(ip_dst) + str(tp_src) + str(tp_dst) + str(ip_proto)
+            flow_id = flow_id.replace(".", "")
           
             try:
                 packet_count_per_second = stat.packet_count/stat.duration_sec
-                packet_count_per_nsecond = stat.packet_count/stat.duration_nsec
             except:
                 packet_count_per_second = 0
-                packet_count_per_nsecond = 0
                 
             try:
                 byte_count_per_second = stat.byte_count/stat.duration_sec
-                byte_count_per_nsecond = stat.byte_count/stat.duration_nsec
             except:
                 byte_count_per_second = 0
-                byte_count_per_nsecond = 0
-                
-            file0.write("{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}\n"
-                .format(timestamp, ev.msg.datapath.id, flow_id, ip_src, tp_src,ip_dst, tp_dst,
-                        stat.match['ip_proto'],icmp_code,icmp_type,
-                        stat.duration_sec, stat.duration_nsec,
-                        stat.idle_timeout, stat.hard_timeout,
-                        stat.flags, stat.packet_count,stat.byte_count,
-                        packet_count_per_second,packet_count_per_nsecond,
-                        byte_count_per_second,byte_count_per_nsecond))
+            
+            flow_duration = int(stat.duration_sec) * 1000
+            file0.write(f"{flow_id},{ip_src},{tp_src},{ip_dst},{tp_dst},{ip_proto},{flow_duration},{byte_count_per_second},{packet_count_per_second},{stat.packet_count},{stat.byte_count}")
+            print("STATS__________________________________________________________________________________________________________________________")
+            print(f"{flow_id},{ip_src},{tp_src},{ip_dst},{tp_dst},{ip_proto},{flow_duration},{byte_count_per_second},{packet_count_per_second},{stat.packet_count},{stat.byte_count}")
+            print("__________________________________________________________________________________________________________________________")
+            # file0.write("{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}\n"
+            #     .format(timestamp, ev.msg.datapath.id, flow_id, ip_src, tp_src,ip_dst, tp_dst,
+            #             ip_proto,
+            #             stat.duration_sec, stat.duration_nsec,
+            #             stat.idle_timeout, stat.hard_timeout,
+            #             stat.flags, stat.packet_count,stat.byte_count,
+            #             packet_count_per_second,packet_count_per_nsecond,
+            #             byte_count_per_second,byte_count_per_nsecond))
             
         file0.close()
         self.flow_predict()
@@ -168,9 +162,8 @@ class SimpleMonitor13(switch.SimpleSwitch13):
             print(f"PREDICTING ---------------")
             predict_flow_dataset = pd.read_csv('PredictFlowStatsfile.csv')
 
-            predict_flow_dataset.iloc[:, 2] = predict_flow_dataset.iloc[:, 2].str.replace('.', '')
+            predict_flow_dataset.iloc[:, 1] = predict_flow_dataset.iloc[:, 1].str.replace('.', '')
             predict_flow_dataset.iloc[:, 3] = predict_flow_dataset.iloc[:, 3].str.replace('.', '')
-            predict_flow_dataset.iloc[:, 5] = predict_flow_dataset.iloc[:, 5].str.replace('.', '')
 
             X_predict_flow = predict_flow_dataset.iloc[:, :].values
             X_predict_flow = X_predict_flow.astype('float64')
@@ -186,9 +179,6 @@ class SimpleMonitor13(switch.SimpleSwitch13):
                 else:
                     ddos_trafic = ddos_trafic + 1
                     victim = int(predict_flow_dataset.iloc[i, 5])%20
-                    
-                    
-                    
 
             self.logger.info("------------------------------------------------------------------------------")
             if (legitimate_trafic/len(y_flow_pred)*100) > 80:
