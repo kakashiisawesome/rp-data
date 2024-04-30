@@ -173,22 +173,22 @@ class SimpleMonitor13(switch.SimpleSwitch13):
             legitimate_trafic = 0
             ddos_trafic = 0
             
-            print(f"PRED = {y_flow_pred}")
+            # print(f"PRED = {y_flow_pred}")
 
             for i in y_flow_pred:
                 if i == 0:
                     legitimate_trafic = legitimate_trafic + 1
                 else:
                     ddos_trafic = ddos_trafic + 1
-                    victim = int(predict_flow_dataset.iloc[i, 5])%20
+                    # victim = int(predict_flow_dataset.iloc[i, 5])%20
 
             self.logger.info("------------------------------------------------------------------------------")
-            if (legitimate_trafic/len(y_flow_pred)*100) > 80:
+            if (legitimate_trafic/len(y_flow_pred)*100) > 50:
                 self.logger.info("legitimate trafic ...")
                 print(f"PREDICT IN TIME {time.time() - self.req_send_time} s")
             else:
                 self.logger.info("ddos trafic ...")
-                self.logger.info("victim is host: h{}".format(victim))
+                # self.logger.info("victim is host: h{}".format(victim))
                 print(f"PREDICT IN TIME {time.time() - self.req_send_time} s")
 
             self.logger.info("------------------------------------------------------------------------------")
