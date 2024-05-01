@@ -185,7 +185,7 @@ class SimpleMonitor13(switch.SimpleSwitch13):
                     # victim = int(predict_flow_dataset.iloc[i, 5])%20
 
             self.logger.info("------------------------------------------------------------------------------")
-            if (legitimate_trafic/len(y_flow_pred)*100) > 60:
+            if (legitimate_trafic/len(y_flow_pred)*100) > 70:
                 self.logger.info("legitimate trafic ...")
                 print(f"PREDICT IN TIME {time.time() - self.req_send_time} s")
             else:
